@@ -19,6 +19,7 @@
 
 package springfox.documentation.oas.configuration;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +65,7 @@ public class OpenApiJacksonModule extends SimpleModule implements JacksonModuleR
   public void setupModule(SetupContext context) {
     super.setupModule(context);
     context.setMixInAnnotations(OpenAPI.class, NonEmptyMixin.class);
-    context.setMixInAnnotations(Info.class, NonEmptyMixin.class);
+    context.setMixInAnnotations(Info.class, UnwrapExtensionsMapMixin.class);
     context.setMixInAnnotations(License.class, NonEmptyMixin.class);
     context.setMixInAnnotations(Schema.class, NonEmptyMixin.class);
     context.setMixInAnnotations(PathItem.class, NonEmptyMixin.class);
@@ -91,5 +92,12 @@ public class OpenApiJacksonModule extends SimpleModule implements JacksonModuleR
   @JsonAutoDetect
   @JsonInclude(value = Include.NON_EMPTY)
   private class NonEmptyMixin {
+  }
+
+  @JsonAutoDetect
+  @JsonInclude(value = Include.NON_EMPTY)
+  private interface UnwrapExtensionsMapMixin {
+    @JsonAnyGetter
+    Map<String, Object> getExtensions();
   }
 }
